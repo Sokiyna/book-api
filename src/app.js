@@ -1,11 +1,13 @@
 import React from 'react';
 import Header from './header';
 // import IsLoadingAndError from './IsLoadingAndError';
+import MyFavoriteBooks from './myFavoriteBooks';
 import Footer from './footer';
-import MyFavoriteBooks from "./myFavoriteBooks"
-import Login from './login';
-import Profile from './ Profile';
 import { withAuth0 } from '@auth0/auth0-react';
+import Login from './login';
+import  Profile from './ Profile';
+
+
 
 
 import {
@@ -13,32 +15,48 @@ import {
   Switch,
   Route
 } from "react-router-dom";
+import axios from 'axios';
 
 class App extends React.Component {
+
+
+
+  
+
 
   render() {
     console.log('app', this.props)
     return (
       <>
         <Router>
+
           {/* <IsLoadingAndError> */}
-            <Header />
-            <Switch>
-              <Route exact path="/">
-                {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
-                {this.props.auth0.isAuthenticated ? <MyFavoriteBooks /> : <Login />}
 
-              </Route>
-              {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
-              {/* {
-                this.props.auth0.isAuthenticated &&
-               
-              } */}
-              <Route path="/profile"><Profile />  </Route>
+          <Header />
+          <Switch>
+            <Route exact path="/">
+              {/* TODO: if the user is logged in, render the `MyFavoriteBooks` component, if they are not, render the `Login` component */}
+              {this.props.auth0.isAuthenticated ? <MyFavoriteBooks />: <Login />}
 
-            </Switch>
-            <Footer />
+            </Route>
+            {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
+            <Route path="/profile">
+
+               < Profile />
+
+              
+
+              
+
+
+
+            </Route>
+
+          </Switch>
+          <Footer />
+
           {/* </IsLoadingAndError> */}
+
         </Router>
       </>
     )
