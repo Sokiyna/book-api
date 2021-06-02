@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import CardColumns from 'react-bootstrap/CardColumns';
 import Card from 'react-bootstrap/Card';
 import BookFormModel from './BookFormModel';
+import UpdateBooks from './UpdateBooks';
 
 let server = process.env.REACT_APP_SERVER_URL
 
@@ -13,13 +14,16 @@ class BestBooks extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            show:false,
+            show: false,
+            showUpdateForm:false,
             books: [],
             bookName: "",
+            index: 0,
             bookDiscription: "",
             bookImageUrl: "",
             showBooksComponent: false,
             showModel: false,
+            showUpdates: false
         }
     }
 
@@ -53,7 +57,7 @@ class BestBooks extends React.Component {
 
         this.setState({
             books: newBook.data,
-           
+
         })
     }
 
@@ -76,9 +80,23 @@ class BestBooks extends React.Component {
         })
     }
 
+
+    handleShowUpdate = () => {
+        this.setState({
+            showUpdateForm:true, 
+        })
+    }
+
+    handleCloseUpdate =() => {
+        this.setState({
+            showUpdates:false,
+        })
+    }
+
     handleShow = () => {
         this.setState({
             show: true,
+        
         })
     }
 
@@ -88,17 +106,56 @@ class BestBooks extends React.Component {
         })
     }
 
-    deleteBook = async (index) =>{
+    deleteBook = async (index) => {
         const email = {
-         email:this.props.auth0.user.email
+            email: this.props.auth0.user.email
         }
-    
-        let newBookreq = await axios.delete(`http://localhost:3001/deleteBook/${index}`, {params:email})
-    
+
+        let newBookreq = await axios.delete(`http://localhost:3001/deleteBook/${index}`, { params: email })
+
         this.setState({
-          books:newBookreq.data
+            books: newBookreq.data
         })
-      }
+    }
+
+    updateBooks = async (event) => {
+        event.preventDefault();
+
+        const updateBooks = {
+            name: this.state.bookName,
+            discription: this.state.bookDiscription,
+            imge: this.state.bookImageUrl,
+            email: this.props.auth0.user.email
+        }
+        let updatedData = await axios.put(`${server}/updateBook/${this.state.index}`, updateBooks)
+
+        this.setState({
+            books: updatedData.data,
+            showUpdates:false
+        })
+
+    }
+
+    showUpdatedBooks = (idx) => {
+
+        const selectedBook = this.state.books.filter((value, index) => {
+            return idx === index;
+        })
+
+        this.setState({
+            showUpdates: true,
+            index: idx,
+            bookName: selectedBook[0].name,
+            bookDiscription: selectedBook[0].discription,
+            bookImageUrl: selectedBook[0].imge
+
+        })
+
+
+    }
+
+
+
     // const books = await axios.get('http://localhost:3001/books', { params: { email: this.props.auth0.user.email } })
     // console.log('books', books.data)
     // this.setState({
@@ -112,13 +169,24 @@ class BestBooks extends React.Component {
                     Add Book
               </Button>
 
-                 <BookFormModel
+                <BookFormModel
                     showvalue={this.state.show}
                     hideValue={this.handleClose}
                     updateBookName={this.updateBookName}
                     updateBookDiscription={this.updateBookDiscription}
                     updateBookImageUrl={this.updateBookImageUrl}
                     addBooks={this.addBooks}
+                />
+
+
+                 <UpdateBooks
+                    showvalueUpdate={this.state.showUpdateForm}
+                    showUpdates={this.state.showUpdates}
+                    handleCloseUpdate={this.handleCloseUpdate}
+                    updateBookName={this.updateBookName}
+                    updateBookDiscription={this.updateBookDiscription}
+                    updateBookImageUrl={this.updateBookImageUrl}
+                    updateBooks={this.updateBooks}
                 />
 
 
@@ -137,12 +205,19 @@ class BestBooks extends React.Component {
                                                 {item.dicription}
                                             </Card.Text>
                                             <Button variant="primary" onClick={() => this.deleteBook(idx)}>Delete</Button>
+                                            <br/>
+
+
+                              
+
+                                            <Button variant="primary" onClick={() => this.showUpdatedBooks(idx)}>Update</Button>
                                         </Card.Body>
                                     </Card>
                                 </div>
                             )
-                        })}
-                    </CardColumns>
+                        })
+                        }
+                    </CardColumns >
 
 
                 }
