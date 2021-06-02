@@ -31,7 +31,7 @@ class BestBooks extends React.Component {
     componentDidMount = async () => {
 
         // const {user} = this.props.auth0;
-        const books = await axios.get(`http://localhost:3001/books`, { params: { email: this.props.auth0.user.email } });
+        const books = await axios.get(`${server}/books`, { params: { email: this.props.auth0.user.email } });
 
         this.setState({
             books: books.data,
@@ -111,7 +111,7 @@ class BestBooks extends React.Component {
             email: this.props.auth0.user.email
         }
 
-        let newBookreq = await axios.delete(`http://localhost:3001/deleteBook/${index}`, { params: email })
+        let newBookreq = await axios.delete(`${server}/deleteBook/${index}`, { params: email })
 
         this.setState({
             books: newBookreq.data
